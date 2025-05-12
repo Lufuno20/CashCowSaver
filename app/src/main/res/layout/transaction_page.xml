@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_gradient">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Top Header Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingHorizontal="8dp"
+                android:background="@android:color/transparent">
+
+                <!-- Back Arrow Icon -->
+                <ImageView
+                    android:id="@+id/back_arrow"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="Back"
+                    android:src="@drawable/baseline_arrow_back_ios_new_24"
+                    app:tint="@color/black" />
+
+                <!-- Title -->
+
+                <!-- Save Button -->
+                <TextView
+                    android:layout_width="310dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Add Transaction"
+                    android:textColor="@color/green_dark"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:layout_marginEnd="20dp"
+                    android:textColor="@color/green_dark"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <!-- Scrollable Tabs -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="70dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btnincome"
+                        android:layout_width="134dp"
+                        android:layout_height="50dp"
+                        android:backgroundTint="@color/background"
+                        android:text="Income"
+                        android:textColor="@color/green_light"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnexpense"
+                        android:layout_width="134dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+
+                        android:backgroundTint="@color/background"
+                        android:text="Expense"
+                        android:textColor="@color/green_light"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btninvestment"
+                        android:layout_width="134dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+
+                        android:backgroundTint="@color/background"
+                        android:text="Investment"
+                        android:textColor="@color/green_light"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <!-- Add more tabs here -->
+                </LinearLayout>
+            </HorizontalScrollView>
+            <!-- Profile Card -->
+            <LinearLayout
+                android:layout_width="355dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/card_bg"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/imgprofile"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/circle"
+                    android:src="@drawable/baseline_account_circle_24" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ZAR"
+                        android:textStyle="bold"
+                        android:textSize="30sp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/txtbalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="R0.00"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Input Fields -->
+            <EditText
+                android:id="@+id/amount_input"
+                android:layout_width="355dp"
+                android:layout_height="72dp"
+                android:hint="Enter Amount"
+                android:textStyle="bold"
+                android:textColorHint="@color/green_dark"
+                android:textSize="25sp"
+                android:padding="12dp"
+                android:background="@drawable/edttext_bg"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Select Category -->
+            <LinearLayout
+                android:id="@+id/select_category"
+                android:layout_width="355dp"
+                android:layout_height="72dp"
+                android:background="@drawable/edttext_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/categoryimg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/icons_solid"
+                    android:backgroundTint="@android:color/darker_gray"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/txtcategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Select Category"
+                    android:textColor="@color/green_dark"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/note_input"
+                android:layout_width="355dp"
+                android:layout_height="72dp"
+                android:hint="Write Note (Optional)"
+                android:padding="12dp"
+                android:textColorHint="@color/green_dark"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:background="@drawable/edttext_bg"
+                android:inputType="textCapSentences"
+                android:layout_marginBottom="8dp" />
+            <!-- Set Date -->
+            <LinearLayout
+                android:id="@+id/set_date"
+                android:layout_width="355dp"
+                android:layout_height="72dp"
+                android:background="@drawable/edttext_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/baseline_calendar_month_24"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/txtsetdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Set Date"
+                    android:textColor="@color/green_dark"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Set Reminder -->
+            <LinearLayout
+                android:id="@+id/set_reminder"
+                android:layout_width="355dp"
+                android:layout_height="72dp"
+                android:background="@drawable/edttext_bg"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/baseline_access_time_24"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/txtreminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="Set Reminder"
+                    android:textColor="@color/green_dark"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+            <!-- Camera & Gallery Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:id="@+id/camera_tab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button"
+                    android:backgroundTint="@color/camera"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="67dp"
+                        android:layout_height="65dp"
+                        android:src="@drawable/baseline_camera_alt_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Camera"
+                        android:textColor="@color/cameraicon"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="15dp"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/gallery_tab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button"
+                    android:backgroundTint="@color/galleryicon"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:src="@drawable/baseline_image_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gallery"
+                        android:textColor="@color/gallery"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="15dp"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/print_tab"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button"
+                    android:backgroundTint="@color/printicon"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <ImageView
+                        android:layout_width="67dp"
+                        android:layout_height="65dp"
+                        android:src="@drawable/baseline_local_printshop_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Print"
+                        android:textColor="@color/print"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/background_gradient"
+        android:gravity="center_horizontal">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="30dp">
+
+            <ImageView
+                android:layout_width="37dp"
+                android:layout_height="37dp"
+                android:src="@drawable/baseline_arrow_back_ios_new_24"
+                android:layout_marginStart="10dp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Your Saving Goal"
+                android:textColor="@color/green_dark"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:layout_marginStart="30dp"/>
+        </LinearLayout>
+
+        <!-- Input Section -->
+        <LinearLayout
+            android:id="@+id/input_section"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp">
+
+            <EditText
+                android:id="@+id/goal_input"
+                android:layout_width="338dp"
+                android:layout_height="65dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/input_bg"
+                android:backgroundTint="#32668563"
+                android:hint="Enter your goal"
+                android:inputType="numberDecimal"
+                android:padding="12dp"
+                android:textColor="#000000"
+                android:textColorHint="#BFC09A1E"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+            <!-- Select Icon -->
+            <EditText
+                android:id="@+id/amount_input2"
+                android:layout_width="338dp"
+                android:layout_height="65dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/input_bg"
+                android:backgroundTint="#32668563"
+                android:hint="Enter Amount"
+                android:inputType="numberDecimal"
+                android:padding="12dp"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textColorHint="#BFC09A1E" />
+
+            <LinearLayout
+                android:layout_width="338dp"
+                android:layout_height="65dp"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:backgroundTint="#32668563"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="41dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/icons_solid" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Icon"
+                    android:textColor="#B3C09A1E"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!-- Set Date -->
+            <LinearLayout
+                android:layout_width="338dp"
+                android:layout_height="65dp"
+                android:orientation="horizontal"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:layout_marginStart="20dp"
+                android:backgroundTint="#32668563"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="41dp"
+                    android:src="@drawable/baseline_calendar_month_24"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set Date"
+                    android:textColor="#B3C09A1E"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

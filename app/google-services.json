@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "608795815874",
+    "project_id": "cash-cow-saver",
+    "storage_bucket": "cash-cow-saver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608795815874:android:5d04acd2a172573956305b",
+        "android_client_info": {
+          "package_name": "com.example.cashcowsaver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608795815874-b4k301iie5p4gg294u8ln7i5d4lnekha.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cashcowsaver",
+            "certificate_hash": "7c9773c4068e243721ddf5715b4c7e2322368937"
+          }
+        },
+        {
+          "client_id": "608795815874-4mq727nspipigqgblokgh8dhk7m0n26o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyHKk95bPlLtjnKaNAIqa4TgrE1BfP1I4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608795815874-4mq727nspipigqgblokgh8dhk7m0n26o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
