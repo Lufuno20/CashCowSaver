@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Cash Cow Saver</string>
+    <string name="default_web_client_id">1234567890-abcde12345.apps.googleusercontent.com</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background">#F8F6DF</color>
+    <color name="green_dark">#668563</color>
+    <color name="green_light">#A5B89A</color>
+    <color name="gray_text">#A5B89A</color>
+    <color name="input_line">#E0E0E0</color>
+    <color name="camera">#4EB4F3</color>
+    <color name="cameraicon">#055180</color>
+    <color name="gallery">#C55401</color>
+    <color name="galleryicon">#F8A162</color>
+    <color name="print">#800080</color>
+    <color name="printicon">#DB81DB</color>
+    <color name="highlightColor">#668563</color>
+
+
+
+</resources>
