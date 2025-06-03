@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class HomeActivity : AppCompatActivity() {
-    private lateinit var navDrawer: LinearLayout
-    private lateinit var overlay: View
+   /*private lateinit var navDrawer: LinearLayout
+    private lateinit var overlay: View*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,29 +23,43 @@ class HomeActivity : AppCompatActivity() {
         val incomeLayout = findViewById<LinearLayout>(R.id.addIncome)
         val expenseLayout = findViewById<LinearLayout>(R.id.addExpense)
 
-        //nav//
+        incomeLayout.setOnClickListener() {
+            val intent = Intent(this, TransactionActivity::class.java)
+            intent.putExtra("transaction_type", "income") // Pass "income" type
+            startActivity(intent)
+            finish()
+        }
+
+        expenseLayout.setOnClickListener() {
+            val intent = Intent(this, TransactionActivity::class.java)
+            intent.putExtra("transaction_type", "expense") // Pass "expense" type
+            startActivity(intent)
+            finish()
+        }
+
+        /*//nav//
         navDrawer = findViewById(R.id.navView)
         val profileIcon = findViewById<ImageView>(R.id.profile_pic)
-        navDrawer = findViewById(R.id.navView)
+        navDrawer = findViewById(R.id.navView)*/
 
-        profileIcon.setOnClickListener {
+       /* profileIcon.setOnClickListener {
             showDrawer()
         }
         overlay.setOnClickListener {
             hideDrawer()
         }
 
-        setNavClickListeners()
+        setNavClickListeners()*/
 
 
         //set item listeners//
-        findViewById<LinearLayout>(R.id.home_tab).setOnClickListener {
+      /*  findViewById<LinearLayout>(R.id.home_tab).setOnClickListener {
             startActivity(Intent(this, HomeActivity::class.java))
-        }
+        }*/
 
         /* findViewById<LinearLayout>(R.id.savings_tab).setOnClickListener {
              startActivity(Intent(this, SavingsActivity::class.java))
-         }*/
+         }
 
         findViewById<LinearLayout>(R.id.transact_tab).setOnClickListener {
             startActivity(Intent(this, TransactionActivity::class.java))
@@ -70,19 +84,6 @@ class HomeActivity : AppCompatActivity() {
 
 
 
-        incomeLayout.setOnClickListener() {
-            val intent = Intent(this, TransactionActivity::class.java)
-            intent.putExtra("transaction_type", "income") // Pass "income" type
-            startActivity(intent)
-            finish()
-        }
-
-        expenseLayout.setOnClickListener() {
-            val intent = Intent(this, TransactionActivity::class.java)
-            intent.putExtra("transaction_type", "expense") // Pass "expense" type
-            startActivity(intent)
-            finish()
-        }
 
     }
 
@@ -112,7 +113,7 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(Intent(this, activityClass))
                 hideDrawer()
             }
-        }
+        }*/
     }
 }
 

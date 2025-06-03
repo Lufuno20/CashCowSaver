@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
         val tabSignUp = findViewById<TextView>(R.id.tab_sign_up)
         val tabSignIn = findViewById<TextView>(R.id.tab_sign_in)
 
-        tabSignIn.setBackgroundResource(R.drawable.tab_selector)
+        tabSignIn.setBackgroundResource(R.drawable.tab_selector_left)
         tabSignUp.setBackgroundColor(Color.TRANSPARENT)
 
         tabSignUp.setOnClickListener {
@@ -140,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
+                   // finish()
                 } else {
                     Toast.makeText(
                         this,
