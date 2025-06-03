@@ -9,9 +9,16 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.example.cashcowsaver.adaptors.TransactionAdaptor
+import com.example.cashcowsaver.models.Transaction
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class HomeActivity : AppCompatActivity() {
+    //transaction view//
+    private val transactionList = mutableListOf<Transaction>()
+    private lateinit var transactionAdaptor: TransactionAdaptor
    /*private lateinit var navDrawer: LinearLayout
     private lateinit var overlay: View*/
 
@@ -36,7 +43,18 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+//transaction//
+        val recycleView = findViewById<RecyclerView>(R.id.transactionview)
+        transactionAdaptor = transactionAdaptor(transactionList)
 
+        recycleView.layoutManager = LinearLayoutManager(this)
+        recycleView.adapter = transactionAdaptor
+
+        //handle passed transaction//
+        intent.getParcelableExtra<Transaction>("transaction")?.let{
+            transactionList.add(it)
+            transactionAdaptor.notifyItemInserted(transactionList.size -1)
+        }
         /*//nav//
         navDrawer = findViewById(R.id.navView)
         val profileIcon = findViewById<ImageView>(R.id.profile_pic)

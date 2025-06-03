@@ -20,7 +20,7 @@ import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import com.example.cashcowsaver.Transaction
+import com.example.cashcowsaver.models.Transaction
 
 class TransactionActivity : AppCompatActivity() {
 
