@@ -1,5 +1,6 @@
 package com.example.cashcowsaver
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Color
@@ -14,13 +15,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import com.example.cashcowsaver.models.Transaction
+import com.example.cashcowsaver.database.DatabaseProvider
+import com.example.cashcowsaver.models.TransactionEntity
+import com.example.cashcowsaver.viewmodel.TransactionViewModel
+import kotlinx.coroutines.launch
 
 class TransactionActivity : AppCompatActivity() {
 
@@ -55,11 +61,13 @@ class TransactionActivity : AppCompatActivity() {
         R.drawable.outline_shopping_cart_24 //fallback / default icon//
 
 
+    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.transaction_page)
         val income = findViewById<Button>(R.id.btnincome)
         val expense = findViewById<Button>(R.id.btnexpense)
+
         val transactionType = intent.getStringExtra("transaction_type")
         enterAmountEditText = findViewById(R.id.amount_input)
 
@@ -141,6 +149,8 @@ class TransactionActivity : AppCompatActivity() {
         selectedCategoryLayout.setOnClickListener {
             val intent = Intent(this, CategoryActivity::class.java)
             startActivityForResult(intent, CATEGORY_REQUEST_CODE)
+            //set category selection from linear layout//
+            setupCategorySelection()
         }
         //category//
 
@@ -161,8 +171,6 @@ class TransactionActivity : AppCompatActivity() {
         val noteditText = findViewById<EditText>(R.id.note_input)
         dateTextView = findViewById(R.id.txtsetdate)
 
-        //set category selection from linearlayouyt//
-        setupCategorySelection()
 
         //set date picker//
         dateTextView.setOnClickListener {
@@ -177,31 +185,38 @@ class TransactionActivity : AppCompatActivity() {
             isIncomeSelected = false
             isExpenseSelected = true
         }
+        val viewModel = ViewModelProvider(this)[TransactionViewModel::class.java]
 
         savebtn.setOnClickListener {
             val amount = amountedit.text.toString().toDoubleOrNull() ?: 0.0
             val note = noteditText.text.toString()
+            val db = DatabaseProvider.getDatabase(this)
+            val dao = db.transactionDao()
             val type = if (isIncomeSelected) "income" else "expense"
 
-            if (selectedDate.isBlank() || selectedCategory.isBlank()) {
+            if (selectedDate.isNotEmpty() || selectedCategory.isNotEmpty()) {
+                lifecycleScope.launch {
+                    dao.insert(
+                        TransactionEntity(
+                            category = selectedCategory,
+                            description = note,
+                            amount = amount,
+                            date = selectedDate,
+                            iconResId = selectedIconResId,
+                            type = type
+                        )
+                    )
+                    // Go back to Home
+                    startActivity(Intent(this@TransactionActivity, HomeActivity::class.java))
+                    finish()
+                }
+
+            } else {
                 Toast.makeText(this, "please enter select category and date", Toast.LENGTH_SHORT)
                     .show()
-                return@setOnClickListener
+
+
             }
-
-            val transaction = Transaction(
-                category = selectedCategory,
-                description = note,
-                amount = amount,
-                date = selectedDate,
-                iconResId = selectedIconResId,
-                type = type
-            )
-
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.putExtra("transaction", transaction)
-            startActivity(intent)
-            finish()
         }
     }
 
@@ -227,8 +242,8 @@ class TransactionActivity : AppCompatActivity() {
             R.id.entertain_tab to Pair("entertain", R.drawable.outline_comedy_mask_24)
 
         )
-        for((viewId, value) in categoryMap){
-            val categoryView = findViewById<LinearLayout>(viewId)
+        for ((viewId, value) in categoryMap) {
+            val categoryView = findViewById<LinearLayout>(R.id.select_category)
             categoryView.setOnClickListener {
                 selectedCategory = value.first
                 selectedIconResId = value.second
@@ -239,28 +254,31 @@ class TransactionActivity : AppCompatActivity() {
 
     }
 
-    private fun clearAllHighlights(viewIds: Set<Int>){
-        for(id in viewIds){
+    private fun clearAllHighlights(viewIds: Set<Int>) {
+        for (id in viewIds) {
             findViewById<LinearLayout>(id).setBackgroundResource(android.R.color.transparent)
         }
     }
 
-    private fun showDatePicker(){
+    private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog =DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(
+            this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                selectedDate ="${getMonthName(selectedMonth)} $selectedDay, $selectedYear"
+                selectedDate = "${getMonthName(selectedMonth)} $selectedDay, $selectedYear"
                 dateTextView.text = selectedDate
 
-            }, year, month, day)
+            }, year, month, day
+        )
         datePickerDialog.show()
     }
+
     //this will display the months//
-    private fun getMonthName(month: Int): String{
+    private fun getMonthName(month: Int): String {
         return arrayOf(
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"

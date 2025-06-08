@@ -2,6 +2,7 @@ package com.example.cashcowsaver
 
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -9,19 +10,30 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.example.cashcowsaver.adaptors.TransactionAdaptor
+import androidx.activity.viewModels
+import com.example.cashcowsaver.adaptors.TransactionAdapter
 import com.example.cashcowsaver.models.Transaction
+//import com.example.cashcowsaver.models.TransactionEntity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashcowsaver.viewmodel.TransactionViewModel
 
 class HomeActivity : AppCompatActivity() {
     //transaction view//
-    private val transactionList = mutableListOf<Transaction>()
-    private lateinit var transactionAdaptor: TransactionAdaptor
-   /*private lateinit var navDrawer: LinearLayout
-    private lateinit var overlay: View*/
+    private lateinit var recyclerView: RecyclerView
 
+    private lateinit var transactionAdapter: TransactionAdapter
+
+    // Use viewModels delegate to get the TransactionViewModel
+    private val transactionViewModel: TransactionViewModel by viewModels()
+
+
+    /*private lateinit var navDrawer: LinearLayout
+     private lateinit var overlay: View*/
+
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_page)
@@ -44,36 +56,40 @@ class HomeActivity : AppCompatActivity() {
             finish()
         }
 //transaction//
-        val recycleView = findViewById<RecyclerView>(R.id.transactionview)
-        transactionAdaptor = transactionAdaptor(transactionList)
 
-        recycleView.layoutManager = LinearLayoutManager(this)
-        recycleView.adapter = transactionAdaptor
+        // Find the RecyclerView
+        val recyclerView = findViewById<RecyclerView>(R.id.transactionview)
 
-        //handle passed transaction//
-        intent.getParcelableExtra<Transaction>("transaction")?.let{
-            transactionList.add(it)
-            transactionAdaptor.notifyItemInserted(transactionList.size -1)
-        }
+        // Create an instance of the adapter
+        transactionAdapter = TransactionAdapter()
+
+        // Set adapter and layout manager
+        recyclerView.adapter = transactionAdapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+            // Observe the list of transactions from the ViewModel
+            transactionViewModel.allTransactions.observe(this) { transactions ->
+                transactionAdapter.submitList(transactions)
+            }
         /*//nav//
         navDrawer = findViewById(R.id.navView)
         val profileIcon = findViewById<ImageView>(R.id.profile_pic)
         navDrawer = findViewById(R.id.navView)*/
 
-       /* profileIcon.setOnClickListener {
-            showDrawer()
-        }
-        overlay.setOnClickListener {
-            hideDrawer()
-        }
+        /* profileIcon.setOnClickListener {
+             showDrawer()
+         }
+         overlay.setOnClickListener {
+             hideDrawer()
+         }
 
-        setNavClickListeners()*/
+         setNavClickListeners()*/
 
 
         //set item listeners//
-      /*  findViewById<LinearLayout>(R.id.home_tab).setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
-        }*/
+        /*  findViewById<LinearLayout>(R.id.home_tab).setOnClickListener {
+              startActivity(Intent(this, HomeActivity::class.java))
+          }*/
 
         /* findViewById<LinearLayout>(R.id.savings_tab).setOnClickListener {
              startActivity(Intent(this, SavingsActivity::class.java))
