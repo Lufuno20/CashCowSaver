@@ -20,6 +20,9 @@
         <activity android:name=".TransactionActivity" />
         <activity android:name=".CategoryActivity" />
         <activity android:name=".AnalyticsActivity" />
+        <activity android:name=".GoalActivity"/>
+        <activity android:name=".CreateGoalActivity"/>
+        <activity android:name=".IconActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -1,6 +1,8 @@
 package com.example.cashcowsaver
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +21,17 @@ class GoalActivity : AppCompatActivity() {
         setContentView(R.layout.goals_activity)
         setContentView(binding.root)
 
+        binding.creategoals.setOnClickListener {
+            val intent = Intent(this, CreateGoalActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         adapter = GoalAdapter(emptyList())
         binding.recyclerGoals.layoutManager = LinearLayoutManager(this)
         binding.recyclerGoals.adapter = adapter
 
         lifecycleScope.launch {
-            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAll().collect {
+            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAllGoals().collect {
                 adapter.updateData(it)
             }
         }

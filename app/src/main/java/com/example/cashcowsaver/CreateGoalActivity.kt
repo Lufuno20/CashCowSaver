@@ -1,29 +1,28 @@
 package com.example.cashcowsaver
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.cashcowsaver.TransactionActivity.Companion.CATEGORY_REQUEST_CODE
+import com.example.cashcowsaver.database.GoalAppDatabase
 import com.example.cashcowsaver.databinding.CreateGoalActivityBinding
 import com.example.cashcowsaver.models.GoalEntity
-import com.example.cashcowsaver.database.GoalAppDatabase
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.example.cashcowsaver.models.Icons
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import java.text.DateFormatSymbols
+import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 
 class CreateGoalActivity : AppCompatActivity() {
-
     companion object {
         const val EXTRA_ICON_RES_ID = "extra_icon_res_id"
         const val EXTRA_ICON_COLOR = "extra_icon_color"
@@ -32,24 +31,16 @@ class CreateGoalActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: CreateGoalActivityBinding
-    private var selectedIcon: Int = 0
+    private var selectedCategoryName: String = ""
+    private var selectedIconResId: Int = 0
+    private var selectedColorResId: Int = 0
+
     private var selectedDate: String = ""
+    private var selectedAmount: Double = 0.0
 
-    //date//
-    private lateinit var setDateText: TextView
-    private val calendar = Calendar.getInstance()
-    private lateinit var dateTextView: TextView
-
-    //category//
-    private lateinit var selectedCategoryIcon: ImageView
-    private lateinit var selectedCategoryText: TextView
-    private lateinit var selectedCategoryLayout: LinearLayout
-    private var selectedCategory: String = ""
-
-    //amount//
+    //calculator//
     private lateinit var enterAmountEditText: EditText
     private var isFormatting = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,29 +48,24 @@ class CreateGoalActivity : AppCompatActivity() {
         setContentView(R.layout.create_goal_activity)
         setContentView(binding.root)
 
-        //date picker//
-        setDateText = findViewById(R.id.txtdateInput)
-        dateTextView = findViewById(R.id.txtdateInput)
-
-        setDateText.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Enter Date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                calendar.timeInMillis = selection
-                val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(calendar.time)
-                setDateText.text = formattedDate
-            }
-
-            datePicker.show(supportFragmentManager, "MATERIAL_DATE_PICKER")
+        // === 1. Select Date ===
+        binding.datepick.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val datePicker = DatePickerDialog(
+                this,
+                { _, year, month, dayOfMonth ->
+                    selectedDate =
+                        String.format("%02d %s %d", dayOfMonth, getMonthName(month), year)
+                    binding.txtdateInput.text = selectedDate
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            datePicker.show()
         }
-        //set date picker//
-        dateTextView.setOnClickListener {
-            showDatePicker()
-        }
-        //amount//
+
+        // === 2. Amount (Open calculator from transaction logic) ===
         enterAmountEditText = findViewById(R.id.goalamount)
 
         enterAmountEditText.addTextChangedListener(object : TextWatcher {
@@ -112,100 +98,82 @@ class CreateGoalActivity : AppCompatActivity() {
                 isFormatting = false
             }
         })
+        // === 3. Category selection ===
+        binding.categoryselect.setOnClickListener {
+            showCategoryDialog()
+        }
 
-        //create button//
+
+        // === 4. Save goal to RoomDB ===
         binding.btncreate.setOnClickListener {
-            val title = binding.txtgoals.text.toString()
-            val amountText = binding.goalamount.text.toString()
-                .replace("R", "")
-                .replace(",", "")
-                .trim()
-            val amount = amountText.toDoubleOrNull()
+            val goalTitle = binding.txtgoals.text.toString()
 
-            if (title.isEmpty() || amount == null || selectedDate.isEmpty() || selectedCategory.isEmpty()) {
+            if (goalTitle.isEmpty() || selectedAmount <= 0 || selectedCategoryName.isEmpty() || selectedDate.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val goal = GoalEntity(
-                title = title,
-                category = selectedCategory,
-                amount = amount,
-                iconResId = selectedIcon,
-                targetDate = selectedDate
+                title = goalTitle,
+                amount = selectedAmount,
+                categoryName = selectedCategoryName,
+                iconResId = selectedIconResId,
+                colorResId = selectedColorResId,
+                date = selectedDate
             )
 
             lifecycleScope.launch {
                 GoalAppDatabase.getDatabase(this@CreateGoalActivity).goalDao().insert(goal)
-                finish()
-            }
-
-            //category//
-            selectedCategoryIcon = findViewById(R.id.imgiconInput)
-            selectedCategoryText = findViewById(R.id.txticonInput)
-            selectedCategoryLayout = findViewById(R.id.categoryselect)
-
-            selectedCategoryLayout.setOnClickListener {
-                val intent = Intent(this, IconActivity::class.java)
-                startActivityForResult(intent, CATEGORY_REQUEST_CODE)
-                //set category selection from linear layout//
-                setupCategorySelection()
-            }
-            //category//
-        }
-
-
-    }
-
-    private fun setupCategorySelection() {
-        val categoryMap = mapOf(
-            R.id.house_tab to Pair("House", R.drawable.baseline_house_24),
-            R.id.motor_tab to Pair("car", R.drawable.outline_directions_car_24),
-            R.id.traveling_tab to Pair("traveling", R.drawable.outline_travel_24),
-            R.id.shopping_tab to Pair("shopping", R.drawable.outline_apparel_24),
-            R.id.renovate_tab to Pair("renovate", R.drawable.baseline_chair_24),
-            R.id.payment_tab to Pair("payment", R.drawable.outline_payment_arrow_down_24),
-            R.id.savings_tab to Pair("savings", R.drawable.outline_savings_24),
-            R.id.business_tab to Pair("business", R.drawable.outline_business_center_24),
-
-
-            )
-        for ((viewId, value) in categoryMap) {
-            val categoryView = findViewById<LinearLayout>(R.id.categoryselect)
-            categoryView.setOnClickListener {
-                selectedCategory = value.first
-                selectedIcon = value.second
-                clearAllHighlights(categoryMap.keys)
-                categoryView.setBackgroundResource(R.drawable.bg_selected)
+                Toast.makeText(this@CreateGoalActivity, "Goal Created!", Toast.LENGTH_SHORT).show()
+                finish() // Go back after saving
             }
         }
-
     }
 
-    private fun clearAllHighlights(viewIds: Set<Int>) {
-        for (id in viewIds) {
-            findViewById<LinearLayout>(id).setBackgroundResource(android.R.color.transparent)
-        }
+    private val categoryMap = listOf(
+        Icons("House", R.drawable.baseline_house_24, android.R.color.holo_blue_light),
+        Icons("car", R.drawable.outline_directions_car_24, android.R.color.holo_orange_light),
+        Icons("savings", R.drawable.outline_savings_24, android.R.color.holo_purple),
+        Icons("business", R.drawable.outline_business_center_24, android.R.color.holo_purple),
+        Icons("renovate", R.drawable.baseline_chair_24, android.R.color.holo_red_light),
+        Icons("shopping", R.drawable.outline_shoppingmode_24, android.R.color.holo_green_light),
+        Icons(
+            "payment",
+            R.drawable.outline_payment_arrow_down_24,
+            android.R.color.holo_blue_bright
+        ),
+        Icons("traveling", R.drawable.outline_travel_24, android.R.color.holo_orange_dark),
+    )
+
+
+    // Helper: Convert numeric month to string
+    private fun getMonthName(month: Int): String {
+        return DateFormatSymbols().months[month]
     }
 
-    //date picker display//
-    private fun showDatePicker() {
-        val cal = Calendar.getInstance()
+    private fun showCategoryDialog() {
+        val categoryNames = categoryMap.map { it.name }.toTypedArray()
 
-        DatePickerDialog(this, { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.YEAR, year)
-                set(Calendar.MONTH, month)
-                set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        AlertDialog.Builder(this)
+            .setTitle("Select Category")
+            .setItems(categoryNames) { _, index ->
+                val selected = categoryMap[index]
+                applySelectedCategory(selected)
             }
-
-            // Format: 08 June 2025
-            val formatter = java.text.SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH)
-            selectedDate = formatter.format(calendar.time)
-
-            binding.txtdateInput.text = selectedDate
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+            .create()
+            .show()
     }
+    private fun applySelectedCategory(icons: Icons) {
+        binding.txticonInput.text = icons.name
+        binding.imgiconInput.setImageResource(icons.iconResId)
+        binding.imgiconInput.setBackgroundResource(icons.colorResId)
+
+        // Store for saving
+        selectedCategoryName = icons.name
+        selectedIconResId = icons.iconResId
+        selectedColorResId = icons.colorResId
+    }
+
 
 
 }

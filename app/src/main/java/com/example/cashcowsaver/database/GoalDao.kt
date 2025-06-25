@@ -10,5 +10,5 @@ interface GoalDao {
     suspend fun insert(goal: GoalEntity)
 
     @Query("SELECT * FROM goals")
-    fun getAll(): Flow<List<GoalEntity>>
+    fun getAllGoals(): Flow<List<GoalEntity>>
 }

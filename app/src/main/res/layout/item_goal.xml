@@ -36,15 +36,16 @@
 
 
         </LinearLayout>
-        <TextView
-            android:id="@+id/goalTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
-            android:text="Goal Name"
-            android:textColor="@android:color/black"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/goalTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
+                android:text="Goal Name"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:textStyle="bold" />
         <!-- Status / Time Left -->
         <TextView
             android:id="@+id/goalStatus"

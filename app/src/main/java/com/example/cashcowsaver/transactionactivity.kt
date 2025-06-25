@@ -70,10 +70,11 @@ class TransactionActivity : AppCompatActivity() {
 
         val income = findViewById<Button>(R.id.btnincome)
         val expense = findViewById<Button>(R.id.btnexpense)
+        val investment = findViewById<Button>(R.id.btninvestment)
         db = AppDatabase.getDatabase(this)
 
         //investment button//
-        binding.btninvestment.setOnClickListener {
+        investment.setOnClickListener {
             val intent = Intent(this, GoalActivity::class.java)
             startActivity(intent)
         }

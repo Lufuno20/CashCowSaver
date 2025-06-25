@@ -21,7 +21,7 @@ class GoalAdapter(private var goals: List<GoalEntity>) : RecyclerView.Adapter<Go
         holder.binding.goalTitle.text = goal.title
         holder.binding.goalTargetAmount.text = "R%.2f".format(goal.amount)
         holder.binding.goalIcon.setImageResource(goal.iconResId)
-        holder.binding.goalStatus.text = goal.targetDate
+       // holder.binding.goalStatus.text = goal.status
     }
 
     override fun getItemCount() = goals.size
