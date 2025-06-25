@@ -14,6 +14,8 @@ class CategoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.category_activity)
 
+
+
         //house//
         val houseIcon = findViewById<LinearLayout>(R.id.house_tab)
         houseIcon.setOnClickListener {

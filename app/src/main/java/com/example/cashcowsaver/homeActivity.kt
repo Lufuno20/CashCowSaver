@@ -1,154 +1,131 @@
 package com.example.cashcowsaver
 
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.viewModels
+import android.util.Log
+
 import com.example.cashcowsaver.adaptors.TransactionAdapter
-import com.example.cashcowsaver.models.Transaction
-//import com.example.cashcowsaver.models.TransactionEntity
+import com.example.cashcowsaver.databinding.HomePageBinding
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cashcowsaver.viewmodel.TransactionViewModel
+import com.example.cashcowsaver.database.AppDatabase
+import com.example.cashcowsaver.models.TransactionEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.NumberFormat
+import java.util.Locale
 
 class HomeActivity : AppCompatActivity() {
     //transaction view//
     private lateinit var recyclerView: RecyclerView
+    private lateinit var db: AppDatabase
 
-    private lateinit var transactionAdapter: TransactionAdapter
-
-    // Use viewModels delegate to get the TransactionViewModel
-    private val transactionViewModel: TransactionViewModel by viewModels()
-
-
-    /*private lateinit var navDrawer: LinearLayout
-     private lateinit var overlay: View*/
+    private lateinit var binding: HomePageBinding
+    private lateinit var adapter: TransactionAdapter
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_page)
+        binding = HomePageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        //click listeners fro the income and expenses//
-        val incomeLayout = findViewById<LinearLayout>(R.id.addIncome)
-        val expenseLayout = findViewById<LinearLayout>(R.id.addExpense)
-
-        incomeLayout.setOnClickListener() {
+        binding.addIncome.setOnClickListener {
             val intent = Intent(this, TransactionActivity::class.java)
-            intent.putExtra("transaction_type", "income") // Pass "income" type
+            intent.putExtra("transaction_type", "Income") // Pass "income" type
             startActivity(intent)
-            finish()
         }
 
-        expenseLayout.setOnClickListener() {
+        binding.addExpense.setOnClickListener {
             val intent = Intent(this, TransactionActivity::class.java)
-            intent.putExtra("transaction_type", "expense") // Pass "expense" type
+            intent.putExtra("transaction_type", "Expense") // Pass "expense" type
             startActivity(intent)
-            finish()
         }
-//transaction//
 
-        // Find the RecyclerView
-        val recyclerView = findViewById<RecyclerView>(R.id.transactionview)
+        binding.seegraph.setOnClickListener {
+            val intent = Intent(this, AnalyticsActivity::class.java)
+            startActivity(intent)
+        }
+        //transaction//
 
         // Create an instance of the adapter
-        transactionAdapter = TransactionAdapter()
+        adapter = TransactionAdapter()
 
         // Set adapter and layout manager
-        recyclerView.adapter = transactionAdapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.transactionview.adapter = adapter
+        binding.transactionview.layoutManager = LinearLayoutManager(this)
 
-            // Observe the list of transactions from the ViewModel
-            transactionViewModel.allTransactions.observe(this) { transactions ->
-                transactionAdapter.submitList(transactions)
+        db = AppDatabase.getDatabase(this)
+
+
+        lifecycleScope.launch {
+            db.transactionDao().getAll().collect { transactions ->
+                adapter.setData(transactions)
+                updateBalance(transactions) //THIS MUST BE CALLED
             }
-        /*//nav//
-        navDrawer = findViewById(R.id.navView)
-        val profileIcon = findViewById<ImageView>(R.id.profile_pic)
-        navDrawer = findViewById(R.id.navView)*/
-
-        /* profileIcon.setOnClickListener {
-             showDrawer()
-         }
-         overlay.setOnClickListener {
-             hideDrawer()
-         }
-
-         setNavClickListeners()*/
-
-
-        //set item listeners//
-        /*  findViewById<LinearLayout>(R.id.home_tab).setOnClickListener {
-              startActivity(Intent(this, HomeActivity::class.java))
-          }*/
-
-        /* findViewById<LinearLayout>(R.id.savings_tab).setOnClickListener {
-             startActivity(Intent(this, SavingsActivity::class.java))
-         }
-
-        findViewById<LinearLayout>(R.id.transact_tab).setOnClickListener {
-            startActivity(Intent(this, TransactionActivity::class.java))
+        }
+        // UI-only clear
+        binding.btnclear.setOnClickListener {
+            adapter.setData(emptyList())
+            updateBalance(emptyList())
         }
 
-        /*  findViewById<LinearLayout>(R.id.report_tab).setOnClickListener {
-              startActivity(Intent(this, ReportActivity::class.java))
-          }
-
-          findViewById<LinearLayout>(R.id.history_tab).setOnClickListener {
-              startActivity(Intent(this, HistoryActivity))
-          }
-
-          findViewById<LinearLayout>(R.id.setting_tab).setOnClickListener {
-              startActivity(Intent(this, SettingActivity))
-          }
-
-          findViewById<LinearLayout>(R.id.logoff_tab).setOnClickListener {
-              startActivity(Intent(this, LogOffActivity))
-          }
-          */
-
-
-
-
     }
+    override fun onResume() {
+        super.onResume()
 
-    private fun showDrawer() {
-        navDrawer.animate().translationX(-navDrawer.width.toFloat()).setDuration(300).start()
-        overlay.visibility = View.VISIBLE
-    }
-
-    private fun hideDrawer() {
-        navDrawer.animate().translationX(-navDrawer.width.toFloat()).setDuration(300).start()
-        overlay.visibility = View.GONE
-    }
-
-    private fun setNavClickListeners() {
-        val linkMap = mapOf(
-            R.id.home_tab to MainActivity::class.java,
-            //  R.id.savings_tab to SavingsActivity::class.java,
-            R.id.transact_tab to TransactionActivity::class.java,
-            //   R.id.history_tab to HistoryActivity::class.java,
-            /*   R.id.report_tab to ReportActivity::class.java,
-               R.id.setting_tab to SettingsActivity::class.java,
-               R.id.logoff LogOffActivity::class.java*/
-        )
-
-        linkMap.forEach { (id, activityClass) ->
-            findViewById<TextView>(id).setOnClickListener {
-                startActivity(Intent(this, activityClass))
-                hideDrawer()
+        // Observe Room database when activity resumes
+        lifecycleScope.launch {
+            db.transactionDao().getAll().collectLatest { transactions ->
+                adapter.setData(transactions)
+                updateBalance(transactions)
             }
-        }*/
+        }
     }
+
+    private fun updateBalance(transactions: List<TransactionEntity>) {
+        transactions.forEach {
+            Log.d("DEBUG_TXN", "Type: ${it.type}, Amount: ${it.amount}")
+        }
+
+        val income = transactions.filter { it.type.equals("Income", true) }.sumOf { it.amount }
+        val expense = transactions.filter { it.type.equals("Expense", true) }.sumOf { it.amount }
+        val balance = income - expense
+
+        val formatted = "R %.2f".format(kotlin.math.abs(balance))
+
+        if (balance > 0) {
+            binding.totalbalance.text = "$formatted"
+            binding.totalbalance.setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.holo_green_light
+                )
+            )
+
+        } else {
+            binding.totalbalance.text = "-$formatted"
+            binding.totalbalance.setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    android.R.color.holo_red_dark
+                )
+            )
+
+        }
+        Log.d("BALANCE_FINAL", "Income=$income, Expense=$expense, Balance=$balance")
+
+    }
+
+
 }
 
 

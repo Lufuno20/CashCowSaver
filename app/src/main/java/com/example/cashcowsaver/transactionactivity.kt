@@ -7,28 +7,28 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.res.colorResource
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.cashcowsaver.database.AppDatabase
+import com.example.cashcowsaver.databinding.TransactionPageBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import com.example.cashcowsaver.database.DatabaseProvider
 import com.example.cashcowsaver.models.TransactionEntity
-import com.example.cashcowsaver.viewmodel.TransactionViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+
 import kotlinx.coroutines.launch
 
 class TransactionActivity : AppCompatActivity() {
+    private lateinit var binding: TransactionPageBinding
 
     private lateinit var selectedCategoryIcon: ImageView
     private lateinit var selectedCategoryText: TextView
@@ -55,19 +55,32 @@ class TransactionActivity : AppCompatActivity() {
     private var isIncomeSelected = false
     private var isExpenseSelected = true // Default to expense
     private lateinit var dateTextView: TextView
+    private lateinit var db: AppDatabase
     private var selectedDate: String = ""
     private var selectedCategory: String = ""
-    private var selectedIconResId: Int =
-        R.drawable.outline_shopping_cart_24 //fallback / default icon//
+    private var selectedIconResId: Int = 0
+    private var selectedType: String = "Income" // Default to income
 
 
-    @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.transaction_page)
+        binding = TransactionPageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val income = findViewById<Button>(R.id.btnincome)
         val expense = findViewById<Button>(R.id.btnexpense)
+        db = AppDatabase.getDatabase(this)
 
+        //investment button//
+        binding.btninvestment.setOnClickListener {
+            val intent = Intent(this, GoalActivity::class.java)
+            startActivity(intent)
+        }
+        //Back button (custom ImageView)
+        binding.backArrow.setOnClickListener {
+            handleBackPress()
+        }
         val transactionType = intent.getStringExtra("transaction_type")
         enterAmountEditText = findViewById(R.id.amount_input)
 
@@ -156,7 +169,7 @@ class TransactionActivity : AppCompatActivity() {
 
 //income & expense//
         // Highlight selected button
-        if (transactionType == "income") {
+        if (transactionType == "Income") {
             highlightButton(income)
             unhighlightButton(expense)
         } else if (transactionType == "expense") {
@@ -177,46 +190,65 @@ class TransactionActivity : AppCompatActivity() {
             showDatePicker()
         }
 
-        incomebtn.setOnClickListener {
-            isIncomeSelected = true
-            isExpenseSelected = false
+        binding.btnincome.setOnClickListener {
+            selectedType = "Income"
+            highlightSelectedType()
         }
-        expensebtn.setOnClickListener {
-            isIncomeSelected = false
-            isExpenseSelected = true
+        binding.btnexpense.setOnClickListener {
+            selectedType = "Expense"
+            highlightSelectedType()
         }
-        val viewModel = ViewModelProvider(this)[TransactionViewModel::class.java]
 
         savebtn.setOnClickListener {
-            val amount = amountedit.text.toString().toDoubleOrNull() ?: 0.0
-            val note = noteditText.text.toString()
-            val db = DatabaseProvider.getDatabase(this)
-            val dao = db.transactionDao()
-            val type = if (isIncomeSelected) "income" else "expense"
+            val amountText = binding.amountInput.text.toString()
+                .replace("R", "")
+                .replace(",", "")
+                .trim()
+            val amount = amountText.toDoubleOrNull()
+            val note = binding.noteInput.text.toString()
+            selectedDate = binding.txtsetdate.text.toString()
 
-            if (selectedDate.isNotEmpty() || selectedCategory.isNotEmpty()) {
+            if (selectedDate.isEmpty() || amount == null || selectedCategory.isEmpty()) {
+                Toast.makeText(this, "please enter select category and date", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+
+                val transaction = TransactionEntity(
+                    category = selectedCategory,
+                    description = note,
+                    amount = amount,
+                    date = selectedDate,
+                    iconResId = selectedIconResId,
+                    type = selectedType
+                )
+
                 lifecycleScope.launch {
-                    dao.insert(
-                        TransactionEntity(
-                            category = selectedCategory,
-                            description = note,
-                            amount = amount,
-                            date = selectedDate,
-                            iconResId = selectedIconResId,
-                            type = type
-                        )
-                    )
-                    // Go back to Home
-                    startActivity(Intent(this@TransactionActivity, HomeActivity::class.java))
+                    db.transactionDao().insert(transaction)
+                    val intent = Intent(this@TransactionActivity, HomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
                     finish()
                 }
 
-            } else {
-                Toast.makeText(this, "please enter select category and date", Toast.LENGTH_SHORT)
-                    .show()
-
-
             }
+        }
+        // Default selection highlight
+        highlightSelectedType()
+    }
+
+    private fun highlightSelectedType() {
+        val selectedColor = ContextCompat.getColor(this, R.color.green_dark)
+        val unselectedColor = ContextCompat.getColor(this, R.color.green_light)
+        val letterColor = ContextCompat.getColor(this, R.color.white)
+        if (selectedType == "Income") {
+            binding.btnincome.setBackgroundColor(selectedColor)
+            binding.btnincome.setTextColor(letterColor)
+            binding.btnexpense.setBackgroundColor(unselectedColor)
+
+        } else {
+            binding.btnexpense.setBackgroundColor(selectedColor)
+            binding.btnexpense.setTextColor(letterColor)
+            binding.btnincome.setBackgroundColor(unselectedColor)
         }
     }
 
@@ -261,28 +293,21 @@ class TransactionActivity : AppCompatActivity() {
     }
 
     private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val cal = Calendar.getInstance()
 
-        val datePickerDialog = DatePickerDialog(
-            this,
-            { _, selectedYear, selectedMonth, selectedDay ->
-                selectedDate = "${getMonthName(selectedMonth)} $selectedDay, $selectedYear"
-                dateTextView.text = selectedDate
+        DatePickerDialog(this, { _, year, month, dayOfMonth ->
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.YEAR, year)
+                set(Calendar.MONTH, month)
+                set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            }
 
-            }, year, month, day
-        )
-        datePickerDialog.show()
-    }
+            // Format: 08 June 2025
+            val formatter = java.text.SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH)
+            selectedDate = formatter.format(calendar.time)
 
-    //this will display the months//
-    private fun getMonthName(month: Int): String {
-        return arrayOf(
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        )[month]
+            binding.txtsetdate.text = selectedDate
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }
 
 
@@ -302,20 +327,60 @@ class TransactionActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == CATEGORY_REQUEST_CODE && resultCode == RESULT_OK) {
-            val iconResId = data?.getIntExtra(EXTRA_ICON_RES_ID, 0) ?: 0
-            val color = data?.getIntExtra(EXTRA_ICON_COLOR, Color.BLACK)
-            val categoryName = data?.getStringExtra(EXTRA_CATEGORY_NAME) ?: "Category"
+        if (requestCode == CATEGORY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            selectedIconResId = data.getIntExtra(EXTRA_ICON_RES_ID, 0)
+            val color = data.getIntExtra(EXTRA_ICON_COLOR, Color.BLACK)
+            selectedCategory = data.getStringExtra(EXTRA_CATEGORY_NAME) ?: "Category"
 
             // Display on the Select Category section (icon + text + color)
-            selectedCategoryIcon.setImageResource(iconResId)
-            selectedCategoryIcon.setColorFilter(color?.toInt() ?: 0)
-            selectedCategoryText.text = categoryName
+            binding.categoryimg.setImageResource(selectedIconResId)
+            binding.categoryimg.setColorFilter(color.toInt())
+            binding.txtcategory.text = selectedCategory
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        handleBackPress()
+        return true
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        handleBackPress()
+    }
+
+    private fun handleBackPress() {
+        val amountFilled = binding.amountInput.text.toString().isNotEmpty()
+        val noteFilled = binding.noteInput.text.toString().isNotEmpty()
+        val dateFilled = binding.txtsetdate.text.toString().isNotEmpty()
+        val categorySelected = selectedCategory.isNotEmpty()
+
+        val hasUserStartedFilling = amountFilled || noteFilled || dateFilled || categorySelected
+
+        if (hasUserStartedFilling) {
+            AlertDialog.Builder(this)
+                .setTitle("Discard changes?")
+                .setMessage("You have unsaved data. Are you sure you want to discard and go back?")
+                .setPositiveButton("Discard") { _, _ ->
+                    goBackToHome()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            goBackToHome()
+        }
+    }
+
+    private fun goBackToHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
     }
 
 
 }
+
 
 
 

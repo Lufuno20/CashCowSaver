@@ -28,7 +28,7 @@
 
                 <!-- Back Arrow Icon -->
                 <ImageView
-                    android:id="@+id/back_arrow"
+                    android:id="@+id/backArrow"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:contentDescription="Back"

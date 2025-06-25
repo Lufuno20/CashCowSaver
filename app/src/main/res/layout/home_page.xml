@@ -7,11 +7,10 @@
     android:background="@drawable/background_gradient">
 
 
-
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,10 +20,9 @@
         <LinearLayout
             android:id="@+id/navViews"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="2dp"
-            >
+            android:padding="2dp">
 
 
             <!-- Balance Section -->
@@ -36,7 +34,7 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/balance"
+                    android:id="@+id/totalbalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="R0.00"
@@ -48,7 +46,7 @@
                     android:id="@+id/balance_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/balance"
+                    android:layout_below="@id/totalbalance"
                     android:text="Available Balance"
                     android:textColor="#FFFFFF"
                     android:textSize="22sp" />
@@ -232,6 +230,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:backgroundTint="#A5B89A"
+                                android:fontFamily="@font/inter_bold"
                                 android:text="ALL"
                                 android:textColor="#333"
                                 android:textSize="16sp" />
@@ -275,26 +274,45 @@
                 <LinearLayout
                     android:id="@+id/transactions_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="16dp"
-                    android:orientation="vertical" >
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <Button
+                        android:id="@+id/btnclear"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:backgroundTint="#A5B89A"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Clear All"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/transactionview"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="wrap_content" />
+
                 </LinearLayout>
+
 
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-    <include android:id="@+id/navView"
+
+    <include
+        android:id="@+id/navView"
         layout="@layout/navigation"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
