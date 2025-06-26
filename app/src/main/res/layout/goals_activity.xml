@@ -28,6 +28,7 @@
                 android:padding="16dp">
 
                 <ImageView
+                    android:id="@+id/btnBack"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/baseline_arrow_back_ios_new_24" />
@@ -58,7 +59,7 @@
                     android:src="@drawable/baseline_savings_24" />
 
                 <TextView
-                    android:id="@+id/saved_balance"
+                    android:id="@+id/savedbalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_bold"

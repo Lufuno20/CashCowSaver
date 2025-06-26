@@ -5,10 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.cashcowsaver.models.GoalEntity
+import com.example.cashcowsaver.database.GoalDao
+import com.example.cashcowsaver.models.GoalTransaction
 
-@Database(entities = [GoalEntity::class], version = 1, exportSchema = false)
+
+@Database(entities = [GoalEntity::class, GoalTransaction::class], version = 2)
 abstract class GoalAppDatabase : RoomDatabase() {
     abstract fun goalDao(): GoalDao
+    abstract fun goalTransactionDao(): GoalTransactionDao
 
     companion object {
         @Volatile private var INSTANCE: GoalAppDatabase? = null
@@ -19,7 +23,9 @@ abstract class GoalAppDatabase : RoomDatabase() {
                     context.applicationContext,
                     GoalAppDatabase::class.java,
                     "goal_db"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration()
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }

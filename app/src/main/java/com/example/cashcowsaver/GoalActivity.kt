@@ -1,12 +1,13 @@
 package com.example.cashcowsaver
 
+import GoalAdapter
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.cashcowsaver.adaptors.GoalAdapter
+
+import com.example.cashcowsaver.database.AppDatabase
 import com.example.cashcowsaver.database.GoalAppDatabase
 import com.example.cashcowsaver.databinding.GoalsActivityBinding
 import kotlinx.coroutines.launch
@@ -18,22 +19,48 @@ class GoalActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.goals_activity)
         binding = GoalsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnBack.setOnClickListener {
+            finish() // or onBackPressedDispatcher.onBackPressed()
+        }
+
+        // Navigate to CreateGoalActivity
         binding.creategoals.setOnClickListener {
-            val intent = Intent(this, CreateGoalActivity::class.java)
+            startActivity(Intent(this, CreateGoalActivity::class.java))
+        }
+
+        // Adapter handles goal click -> go to ActiveSavingActivity
+        adapter = GoalAdapter { goal ->
+            val intent = Intent(this, ActiveSavingActivity::class.java)
+            intent.putExtra("goal_id", goal.id)
             startActivity(intent)
         }
-        adapter = GoalAdapter()
+
         binding.recyclerGoals.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerGoals.adapter = adapter
 
+        // Observe Room DB
         lifecycleScope.launch {
-            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAllGoals().collect {
-                adapter.updateData(it)
-            }
+            GoalAppDatabase.getDatabase(this@GoalActivity)
+                .goalDao()
+                .getAllGoals()
+                .collect { goals ->
+                    adapter.setData(goals)
+                }
         }
+
+        lifecycleScope.launch {
+            GoalAppDatabase.getDatabase(this@GoalActivity)
+                .goalDao()
+                .getTotalSaved()
+                .collect { total ->
+                    val amount = total ?: 0.0
+                    binding.savedbalance.text = "R %.2f".format(amount)
+                }
+        }
+
+
     }
 }

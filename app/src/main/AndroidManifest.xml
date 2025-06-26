@@ -23,6 +23,7 @@
         <activity android:name=".GoalActivity"/>
         <activity android:name=".CreateGoalActivity"/>
         <activity android:name=".IconActivity"/>
+        <activity android:name=".ActiveSavingActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

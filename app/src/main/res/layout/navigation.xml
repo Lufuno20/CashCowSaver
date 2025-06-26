@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="@android:color/white">
 
     <ScrollView
         android:id="@+id/navView"
@@ -174,61 +174,7 @@
                     android:textSize="43sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/history_tab"
-                android:layout_width="match_parent"
-                android:layout_height="69dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/nav_selected_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
 
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp">
-
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/outline_calendar_today_24"
-                    app:tint="@color/green_dark" />
-
-                <TextView
-                    android:id="@+id/txthistory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="History"
-                    android:textColor="@color/green_dark"
-                    android:textSize="43sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/setting_tab"
-                android:layout_width="match_parent"
-                android:layout_height="69dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/nav_selected_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="12dp"
-
-                android:paddingEnd="12dp">
-
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/baseline_settings_24"
-                    app:tint="@color/green_dark" />
-
-                <TextView
-                    android:id="@+id/txtsettings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="Settings"
-                    android:textColor="@color/green_dark"
-                    android:textSize="43sp" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/logoff"

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import java.util.Calendar
 import java.util.Locale
 
 class CreateGoalActivity : AppCompatActivity() {
+
     companion object {
         const val EXTRA_ICON_RES_ID = "extra_icon_res_id"
         const val EXTRA_ICON_COLOR = "extra_icon_color"
@@ -47,6 +49,11 @@ class CreateGoalActivity : AppCompatActivity() {
         binding = CreateGoalActivityBinding.inflate(layoutInflater)
         setContentView(R.layout.create_goal_activity)
         setContentView(binding.root)
+//val btnBack = findViewById<ImageView>(R.id.btnBack)
+        // Handle custom back button
+        binding.btnBack.setOnClickListener {
+            handleBackWithConfirmation()
+        }
 
         // === 1. Select Date ===
         binding.datepick.setOnClickListener {
@@ -174,7 +181,27 @@ class CreateGoalActivity : AppCompatActivity() {
         selectedIconResId = icons.iconResId
         selectedColorResId = icons.colorResId
     }
+    // Detect if any fields were filled
+    private fun hasUserInput(): Boolean {
+        return binding.txtgoals.text.toString().isNotBlank() ||
+                selectedAmount > 0.0 ||
+                selectedCategoryName.isNotBlank() ||
+                selectedDate.isNotBlank()
+    }
 
+    // Custom back button and system back button share this logic
+    private fun handleBackWithConfirmation() {
+        if (hasUserInput()) {
+            AlertDialog.Builder(this)
+                .setTitle("Discard Goal?")
+                .setMessage("You have unsaved changes. Do you want to discard and go back?")
+                .setPositiveButton("Discard") { _, _ -> finish() }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            finish()
+        }
+    }
 
 
 }
