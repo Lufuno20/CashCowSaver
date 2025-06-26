@@ -9,6 +9,9 @@ import com.example.cashcowsaver.database.GoalAppDatabase
 import com.example.cashcowsaver.databinding.ItemGoalBinding
 import com.example.cashcowsaver.models.GoalEntity
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class GoalAdapter(
     private val context: Context,
@@ -35,6 +38,8 @@ class GoalAdapter(
         holder.binding.goalIcon.setImageResource(goal.iconResId)
         val progress = ((goal.savedAmount / goal.amount) * 100).toInt().coerceIn(0, 100)
         holder.binding.goalProgressBar.progress = progress
+        //get status months
+        holder.binding.goalStatus.text = getMonthsLeft(goal)
 
 
         // Trophy
@@ -49,6 +54,25 @@ class GoalAdapter(
             onGoalClick(goal)
         }
     }
+    private fun getMonthsLeft(goal: GoalEntity): String {
+        return try {
+            if (goal.savedAmount >= goal.amount) {
+                return "🎉 Goal Completed"
+            }
+
+            val sdf = SimpleDateFormat("dd MM yyyy", Locale.getDefault()) // Update format if needed
+            val target = sdf.parse(goal.date)
+            val now = Calendar.getInstance().time
+
+            val diff = target.time - now.time
+            val months = (diff / (1000L * 60 * 60 * 24 * 30)).toInt()
+
+            if (months <= 0) "Goal Reached" else "$months Months Left"
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
     override fun getItemCount() = goals.size
 
     fun setData(newGoals: List<GoalEntity>) {

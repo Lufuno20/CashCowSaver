@@ -10,11 +10,14 @@ import com.example.cashcowsaver.adaptors.TransactionAdapter
 import com.example.cashcowsaver.databinding.HomePageBinding
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashcowsaver.database.AppDatabase
 import com.example.cashcowsaver.models.TransactionEntity
+import com.example.cashcowsaver.viewmodel.TransactionFilter
+import com.example.cashcowsaver.viewmodel.TransactionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +33,8 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: HomePageBinding
     private lateinit var adapter: TransactionAdapter
+    private lateinit var viewModel: TransactionViewModel
+
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +60,32 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
         //transaction//
+
+        //filter//
+
+        viewModel = ViewModelProvider(this)[TransactionViewModel::class.java]
+        adapter = TransactionAdapter()
+        binding.transactionview.adapter = adapter
+        binding.transactionview.layoutManager = LinearLayoutManager(this)
+
+        // Setup buttons
+        binding.btnall.setOnClickListener {
+            viewModel.setFilter(TransactionFilter.ALL)
+        }
+        binding.btnincome.setOnClickListener {
+            viewModel.setFilter(TransactionFilter.INCOME)
+        }
+        binding.btnexpense.setOnClickListener {
+            viewModel.setFilter(TransactionFilter.EXPENSE)
+        }
+        // Observe filtered transactions
+        lifecycleScope.launchWhenStarted {
+            viewModel.transactions.collect { list ->
+                adapter.setData(list)
+            }
+        }
+
+        // S
 
         // Create an instance of the adapter
         adapter = TransactionAdapter()

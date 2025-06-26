@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -56,12 +57,16 @@ class GoalActivity : AppCompatActivity() {
         binding.recyclerGoals.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerGoals.adapter = adapter
 
-        // Observe Room DB
         lifecycleScope.launch {
-            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAllGoals().collect {
-                adapter.setData(it)
+            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAllGoals().collect { goals ->
+                adapter.setData(goals)
+
+                // ✅ Disable the remove button if no goals exist
+                binding.btnremove.isEnabled = goals.isNotEmpty()
+                binding.btnremove.alpha = if (goals.isNotEmpty()) 1.0f else 0.4f
             }
         }
+
 
         lifecycleScope.launch {
             GoalAppDatabase.getDatabase(this@GoalActivity)
@@ -72,6 +77,23 @@ class GoalActivity : AppCompatActivity() {
                     binding.savedbalance.text = "R %.2f".format(amount)
                 }
         }
+        //remove//
+        binding.btnremove.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Remove All Goals?")
+                .setMessage("Are you sure you want to delete all your saved goals and their transactions?")
+                .setPositiveButton("Remove") { _, _ ->
+                    lifecycleScope.launch {
+                        val db = GoalAppDatabase.getDatabase(this@GoalActivity)
+                        db.goalTransactionDao().deleteAllGoalTransactions()
+                        db.goalDao().deleteAllGoals()
+                        Toast.makeText(this@GoalActivity, "All goals removed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
 
     }
 

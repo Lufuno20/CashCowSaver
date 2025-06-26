@@ -14,5 +14,9 @@ interface GoalTransactionDao {
 
     @Query("SELECT * FROM goal_transactions WHERE goalId = :goalId ORDER BY id DESC")
     fun getTransactionsForGoal(goalId: Int): Flow<List<GoalTransaction>>
+
+    @Query("DELETE FROM goal_transactions")
+    suspend fun deleteAllGoalTransactions()
+
 }
 

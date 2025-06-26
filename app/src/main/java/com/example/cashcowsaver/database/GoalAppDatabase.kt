@@ -11,7 +11,7 @@ import com.example.cashcowsaver.models.GoalTransaction
 
 @Database(
     entities = [GoalEntity::class, GoalTransaction::class], // ✅ include both
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class GoalAppDatabase : RoomDatabase() {

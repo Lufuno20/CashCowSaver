@@ -108,25 +108,12 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/white"
-                    android:drawableLeft="@drawable/outline_add_2_24"
-                    android:drawablePadding="8dp"
-                    android:fontFamily="@font/inter_bold"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="0dp"
-                    android:text="Add"
-                    android:textColor="@android:color/holo_green_light"
-                    android:textSize="25sp" />
-
                 <Space
                     android:layout_width="12dp"
                     android:layout_height="wrap_content" />
 
                 <Button
+                    android:id="@+id/btnremove"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
