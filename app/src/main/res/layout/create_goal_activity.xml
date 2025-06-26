@@ -139,19 +139,19 @@
                 android:background="@drawable/bg_button"
                 android:orientation="vertical">
 
-                <EditText
+                <Button
                     android:id="@+id/btncreate"
                     android:layout_width="308dp"
-                    android:layout_height="65dp"
+                    android:layout_height="78dp"
                     android:layout_marginStart="50dp"
-                    android:layout_marginTop="45dp"
-                    android:background="@drawable/bg_input"
-                    android:backgroundTint="#F8F6DF"
-                    android:hint="     Create Goal"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="@color/green_dark"
-                    android:textSize="35sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="30dp"
+                    android:backgroundTint="@android:color/white"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="Create Goal"
+                    android:textColor="@color/green_dark"
+
+                    android:textSize="25sp" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

@@ -106,16 +106,18 @@ class CreateGoalActivity : AppCompatActivity() {
 
         // === 4. Save goal to RoomDB ===
         binding.btncreate.setOnClickListener {
-            val goalTitle = binding.txtgoals.text.toString()
+            val goalTitle = binding.txtgoals.text.toString().trim()
+            val amountText = binding.goalamount.text.toString()
+            val amount = amountText.filter { it.isDigit() || it == '.' }.toDoubleOrNull() ?: 0.0
 
-            if (goalTitle.isEmpty() || selectedAmount <= 0 || selectedCategoryName.isEmpty() || selectedDate.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            if (goalTitle.isEmpty() || amount <= 0.0 || selectedCategoryName.isEmpty() || selectedDate.isEmpty()) {
+                Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val goal = GoalEntity(
                 title = goalTitle,
-                amount = selectedAmount,
+                amount = amount,
                 categoryName = selectedCategoryName,
                 iconResId = selectedIconResId,
                 colorResId = selectedColorResId,
@@ -124,8 +126,8 @@ class CreateGoalActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 GoalAppDatabase.getDatabase(this@CreateGoalActivity).goalDao().insert(goal)
-                Toast.makeText(this@CreateGoalActivity, "Goal Created!", Toast.LENGTH_SHORT).show()
-                finish() // Go back after saving
+                startActivity(Intent(this@CreateGoalActivity, GoalActivity::class.java))
+                finish()
             }
         }
     }
@@ -166,7 +168,6 @@ class CreateGoalActivity : AppCompatActivity() {
     private fun applySelectedCategory(icons: Icons) {
         binding.txticonInput.text = icons.name
         binding.imgiconInput.setImageResource(icons.iconResId)
-        binding.imgiconInput.setBackgroundResource(icons.colorResId)
 
         // Store for saving
         selectedCategoryName = icons.name

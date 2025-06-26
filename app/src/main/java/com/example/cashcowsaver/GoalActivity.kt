@@ -19,15 +19,15 @@ class GoalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.goals_activity)
+        binding = GoalsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.creategoals.setOnClickListener {
             val intent = Intent(this, CreateGoalActivity::class.java)
             startActivity(intent)
-            finish()
         }
-        adapter = GoalAdapter(emptyList())
-        binding.recyclerGoals.layoutManager = LinearLayoutManager(this)
+        adapter = GoalAdapter()
+        binding.recyclerGoals.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerGoals.adapter = adapter
 
         lifecycleScope.launch {
