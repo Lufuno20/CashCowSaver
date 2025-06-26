@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-
+/*
 enum class TransactionFilter { ALL, INCOME, EXPENSE }
 
 class TransactionViewModel(private val dao: TransactionDao) : ViewModel() {
@@ -38,3 +38,4 @@ class TransactionViewModel(private val dao: TransactionDao) : ViewModel() {
         filterType.value = filter
     }
 }
+*/
