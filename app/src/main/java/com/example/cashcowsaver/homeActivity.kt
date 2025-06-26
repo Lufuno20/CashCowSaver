@@ -63,10 +63,13 @@ class HomeActivity : AppCompatActivity() {
 
         //filter//
 
-        viewModel = ViewModelProvider(this)[TransactionViewModel::class.java]
-        adapter = TransactionAdapter()
-        binding.transactionview.adapter = adapter
-        binding.transactionview.layoutManager = LinearLayoutManager(this)
+        val dao = AppDatabase.getDatabase(this).transactionDao()
+
+        lifecycleScope.launch {
+            dao.getAllTransactions().collect { list ->
+                adapter.setData(list)
+            }
+        }
 
         // Setup buttons
         binding.btnall.setOnClickListener {
