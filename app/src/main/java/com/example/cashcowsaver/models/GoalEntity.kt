@@ -13,5 +13,5 @@ data class GoalEntity(
     val iconResId: Int,
     val colorResId: Int,
     val date: String,
-   // val status: String
+    val isCompleted: Boolean = false
 )

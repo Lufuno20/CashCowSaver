@@ -2,7 +2,11 @@ package com.example.cashcowsaver
 
 import GoalAdapter
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Button
+import android.widget.VideoView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,23 +36,31 @@ class GoalActivity : AppCompatActivity() {
         }
 
         // Adapter handles goal click -> go to ActiveSavingActivity
-        adapter = GoalAdapter { goal ->
+        adapter = GoalAdapter(
+            context = this,
+            onGoalClick = { goal ->
             val intent = Intent(this, ActiveSavingActivity::class.java)
             intent.putExtra("goal_id", goal.id)
             startActivity(intent)
-        }
+        },
+            onGoalCompleted = { goal ->
+                showGoalCompleteDialog()
+
+                lifecycleScope.launch {
+                    val updatedGoal = goal.copy(isCompleted = true)
+                    GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().updateGoal(updatedGoal)
+                }
+            }
+        )
 
         binding.recyclerGoals.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerGoals.adapter = adapter
 
         // Observe Room DB
         lifecycleScope.launch {
-            GoalAppDatabase.getDatabase(this@GoalActivity)
-                .goalDao()
-                .getAllGoals()
-                .collect { goals ->
-                    adapter.setData(goals)
-                }
+            GoalAppDatabase.getDatabase(this@GoalActivity).goalDao().getAllGoals().collect {
+                adapter.setData(it)
+            }
         }
 
         lifecycleScope.launch {
@@ -61,6 +73,27 @@ class GoalActivity : AppCompatActivity() {
                 }
         }
 
-
     }
+
+    fun showGoalCompleteDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_activty, null)
+        val videoView = dialogView.findViewById<VideoView>(R.id.congratsgiff)
+        val closeBtn = dialogView.findViewById<Button>(R.id.btnCloseDialog)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        val uri = Uri.parse("android.resource://$packageName/${R.raw.congratsgiff}")
+        videoView.setVideoURI(uri)
+        videoView.setOnPreparedListener { videoView.start() }
+
+        closeBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
 }

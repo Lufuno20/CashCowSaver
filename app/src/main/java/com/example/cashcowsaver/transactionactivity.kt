@@ -7,9 +7,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,8 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class TransactionActivity : AppCompatActivity() {
-    private lateinit var navDrawer: View
-
     private lateinit var binding: TransactionPageBinding
 
     private lateinit var selectedCategoryIcon: ImageView
@@ -67,7 +62,6 @@ class TransactionActivity : AppCompatActivity() {
     private var selectedType: String = "Income" // Default to income
 
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.transaction_page)
@@ -78,60 +72,6 @@ class TransactionActivity : AppCompatActivity() {
         val expense = findViewById<Button>(R.id.btnexpense)
         val investment = findViewById<Button>(R.id.btninvestment)
         db = AppDatabase.getDatabase(this)
-
-        // Make sure you are referencing the full included drawer view, not the ScrollView
-        navDrawer = findViewById(R.id.navView)
-
-// Click on profile icon to show nav
-        val profilePic = binding.imgprofile // Use binding if in your layout
-        profilePic.setOnClickListener {
-            showNavigationDrawer()
-        }
-        // Optional: Close drawer if background is tapped
-        navDrawer.setOnClickListener {
-            hideNavigationDrawer()
-        }
-
-        // When background or Log Off is clicked
-        val logOff = navDrawer.findViewById<LinearLayout>(R.id.logoff)
-        logOff.setOnClickListener {
-            hideNavigationDrawer()
-        }
-
-
-        // Access nav tabs
-        val homeTab = navDrawer.findViewById<LinearLayout>(R.id.home_tab)
-        val savingsTab = navDrawer.findViewById<LinearLayout>(R.id.savings_tab)
-        val transactTab = navDrawer.findViewById<LinearLayout>(R.id.transact_tab)
-        val reportTab = navDrawer.findViewById<LinearLayout>(R.id.report_tab)
-        val logOffTab = navDrawer.findViewById<LinearLayout>(R.id.logoff)
-
-        // Each tab click → navigate
-        homeTab.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
-            hideNavigationDrawer()
-        }
-
-        savingsTab.setOnClickListener {
-            startActivity(Intent(this, GoalActivity::class.java))
-            hideNavigationDrawer()
-        }
-
-        transactTab.setOnClickListener {
-            startActivity(Intent(this, TransactionActivity::class.java))
-            hideNavigationDrawer()
-        }
-
-        reportTab.setOnClickListener {
-            startActivity(Intent(this, AnalyticsActivity::class.java))
-            hideNavigationDrawer()
-        }
-
-        logOffTab.setOnClickListener {
-            // TODO: Clear user data/session
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-        }
 
         //investment button//
         investment.setOnClickListener {
@@ -439,24 +379,6 @@ class TransactionActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun showNavigationDrawer() {
-        navDrawer.visibility = View.VISIBLE
-        navDrawer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_right_in))
-    }
-
-
-    private fun hideNavigationDrawer() {
-        val anim = AnimationUtils.loadAnimation(this, R.anim.slide_right_out)
-        anim.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationEnd(animation: Animation?) {
-                navDrawer.visibility = View.GONE
-            }
-
-            override fun onAnimationStart(animation: Animation?) {}
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-        navDrawer.startAnimation(anim)
-    }
 
 }
 

@@ -16,5 +16,8 @@ interface GoalDao {
     @Query("SELECT SUM(savedAmount) FROM goals")
     fun getTotalSaved(): Flow<Double>
 
+    @Update
+    suspend fun updateGoal(goal: GoalEntity)
+
 }
 

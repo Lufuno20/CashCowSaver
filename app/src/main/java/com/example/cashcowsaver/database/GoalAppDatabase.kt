@@ -9,13 +9,18 @@ import com.example.cashcowsaver.database.GoalDao
 import com.example.cashcowsaver.models.GoalTransaction
 
 
-@Database(entities = [GoalEntity::class, GoalTransaction::class], version = 2)
+@Database(
+    entities = [GoalEntity::class, GoalTransaction::class], // ✅ include both
+    version = 2,
+    exportSchema = false
+)
 abstract class GoalAppDatabase : RoomDatabase() {
     abstract fun goalDao(): GoalDao
     abstract fun goalTransactionDao(): GoalTransactionDao
 
     companion object {
-        @Volatile private var INSTANCE: GoalAppDatabase? = null
+        @Volatile
+        private var INSTANCE: GoalAppDatabase? = null
 
         fun getDatabase(context: Context): GoalAppDatabase {
             return INSTANCE ?: synchronized(this) {
